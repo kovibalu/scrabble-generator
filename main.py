@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 
 URL_TEMPLATE = 'https://www.papertraildesign.com/wp-content/uploads/2018/07/Scrabble-tile-{}-wood.jpg'
+URL_TEMPLATE_FOR_F = 'https://www.papertraildesign.com/wp-content/uploads/2018/07/Scrabble-tile-{}-wook.jpg'
 
 
 def download_letter_images(root_dir):
@@ -19,7 +20,11 @@ def download_letter_images(root_dir):
             print 'Letter "{}" already downloaded to "{}"'.format(c, fpath)
         else:
             print 'Downloading letter "{}" to "{}"'.format(c, fpath)
-            url = URL_TEMPLATE.format(c)
+            # Handle F as a special case, because the original link is buggy.
+            if c == 'F':
+                url = URL_TEMPLATE_FOR_F.format(c)
+            else:
+                url = URL_TEMPLATE.format(c)
             request = requests.get(url)
             open(fpath, 'wb').write(request.content)
 
@@ -41,6 +46,9 @@ def create_word_image(letter_img_dic, word, letter_px, gap_px):
         # Handle space as a special case. Here we don't need to draw anything.
         if c == ' ':
             continue
+
+        if c.lower() not in letter_img_dic:
+            raise ValueError('Invalid letter: {}'.format(c))
 
         letter_img = letter_img_dic[c.lower()]
         # Resize the letter image to have the desired dimensions.
@@ -119,13 +127,25 @@ def create_words_image(letter_img_dic,
 
 def main():
     letter_img_dic = download_letter_images('scrabble-letters')
-    word_image = create_words_image(
-        letter_img_dic=letter_img_dic,
-        words=['Neelam', 'loves', 'Balazs'],
-        letter_px=200,
-        gap_px=10,
-        max_letters_per_row=12)
-    cv2.imwrite('cool-scrabble-image.jpg', word_image)
+    food_names = [
+        'Burrata bar',
+        'Fried chickpea panisse',
+        'Curried squash fritters',
+        'Vegetable coconut curry',
+        'Saag paneer peppers',
+        'Barbecued hog roast',
+        'Braised chicken with polenta',
+    ]
+    for food_name in food_names:
+        words = food_name.split()
+        word_image = create_words_image(
+            letter_img_dic=letter_img_dic,
+            words=words,
+            letter_px=200,
+            gap_px=10,
+            max_letters_per_row=16)
+        fname = '{}.jpg'.format('-'.join(words))
+        cv2.imwrite(fname, word_image)
 
 
 if __name__ == '__main__':
