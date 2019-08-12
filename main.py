@@ -135,6 +135,10 @@ def main():
         'Saag paneer peppers',
         'Barbecued hog roast',
         'Braised chicken with polenta',
+        'Pogacsa',
+        'Turos retes',
+        'Almas retes',
+        'Meggyes potyogtatos',
     ]
     for food_name in food_names:
         words = food_name.split()
