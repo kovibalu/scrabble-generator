@@ -139,6 +139,7 @@ def main():
         'Turos retes',
         'Almas retes',
         'Meggyes potyogtatos',
+        'Kids table',
     ]
     for food_name in food_names:
         words = food_name.split()
